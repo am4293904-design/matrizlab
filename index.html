@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1931">
+  <meta name="description" content="MatrizLab resuelve sistemas lineales de hasta 40 ecuaciones e incógnitas con Gauss-Jordan, verificación e importación desde Excel.">
+  <title>MatrizLab | Calculadora de sistemas lineales</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="solver.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#inicio" aria-label="MatrizLab, inicio">
+        <span class="brand-mark" aria-hidden="true"><span>1</span><span>0</span><span>0</span><span>1</span></span>
+        <span>Matriz<span class="brand-accent">Lab</span></span>
+      </a>
+      <span class="header-tag">HERRAMIENTA DE INGENIERÍA <span class="dot">·</span> EN TU NAVEGADOR</span>
+      <span class="privacy-tag"><span class="status-dot"></span> Cálculo local</span>
+    </div>
+  </header>
+
+  <main id="inicio" class="shell">
+    <section class="intro" aria-labelledby="heading">
+      <div class="eyebrow"><span class="eyebrow-line"></span> ÁLGEBRA LINEAL INTERACTIVA</div>
+      <h1 id="heading">Resuelve sistemas grandes.<br><span>Entiende cada paso.</span></h1>
+      <p>Calculadora para sistemas de ecuaciones lineales de hasta <strong>40 × 40</strong>. Ingresa los coeficientes, pega una tabla desde Excel y obtén soluciones mediante <strong>Gauss-Jordan con pivoteo parcial</strong>.</p>
+      <div class="feature-chips"><span>↗ Pivoteo parcial</span><span>≡ Rangos y determinante</span><span>✓ Verificación del resultado</span></div>
+    </section>
+
+    <section class="panel workspace" aria-labelledby="edit-title">
+      <div class="section-head">
+        <div>
+          <div class="section-overline">01 / CONFIGURACIÓN</div>
+          <h2 id="edit-title">Define tu sistema</h2>
+        </div>
+        <span class="muted-label" id="matrixSize">3 ecuaciones · 3 incógnitas</span>
+      </div>
+      <div class="config-row">
+        <div class="counter-wrap"><label for="numRows">Ecuaciones</label><div class="counter"><button type="button" data-counter="numRows" data-delta="-1" aria-label="Reducir ecuaciones">−</button><input id="numRows" aria-label="Número de ecuaciones" type="number" min="1" max="40" step="1" value="3"><button type="button" data-counter="numRows" data-delta="1" aria-label="Aumentar ecuaciones">+</button></div></div>
+        <span class="times" aria-hidden="true">×</span>
+        <div class="counter-wrap"><label for="numCols">Incógnitas</label><div class="counter"><button type="button" data-counter="numCols" data-delta="-1" aria-label="Reducir incógnitas">−</button><input id="numCols" aria-label="Número de incógnitas" type="number" min="1" max="40" step="1" value="3"><button type="button" data-counter="numCols" data-delta="1" aria-label="Aumentar incógnitas">+</button></div></div>
+        <button class="btn btn-secondary btn-generate" id="buildBtn" type="button">Actualizar matriz</button>
+        <div class="example-wrap"><label for="examplePicker">Probar un ejemplo</label><select id="examplePicker" aria-label="Cargar sistema de ejemplo"><option value="">Elegir ejemplo...</option><option value="simple">Sistema 3 × 3</option><option value="mechanism">Sistema 9 × 9</option><option value="infinite">Infinitas soluciones</option><option value="impossible">Sin solución</option></select></div>
+      </div>
+
+      <div class="matrix-section-head">
+        <div><h3>Matriz aumentada <span class="matrix-notation">[ A | b ]</span></h3><p>Cada fila representa una ecuación. La última columna es el término independiente.</p></div>
+        <div class="small-actions"><button type="button" class="text-btn" id="zerosBtn">Poner ceros</button><button type="button" class="text-btn" id="copyMatrixBtn">Copiar matriz</button></div>
+      </div>
+      <div class="matrix-scroll" role="region" aria-label="Editor de matriz aumentada" tabindex="0">
+        <table id="matrixTable" class="matrix-table" aria-label="Coeficientes del sistema"></table>
+      </div>
+      <div class="editor-footer"><span id="editHint" class="hint"><span aria-hidden="true">ⓘ</span> Acepta decimales (1.5), coma decimal (1,5) y fracciones (3/4).</span><span class="hint">Arrastra horizontalmente para matrices grandes.</span></div>
+
+      <details class="import-details" id="importDetails">
+        <summary><span class="file-icon">▦</span><span><strong>Importar desde Excel o CSV</strong><small>Pega filas de coeficientes y su término independiente</small></span><span class="summary-arrow">⌄</span></summary>
+        <div class="import-body"><label for="bulkPaste">Pega aquí la matriz aumentada (una ecuación por renglón):</label><textarea id="bulkPaste" rows="4" spellcheck="false" placeholder="2\t1\t-1\t8&#10;-3\t-1\t2\t-11&#10;-2\t1\t2\t-3"></textarea><p>Admite tabulaciones de Excel, punto y coma (;), CSV con comas o espacios. Para decimales con coma, usa tabulaciones o punto y coma. La aplicación detecta automáticamente el tamaño.</p><button type="button" class="btn btn-secondary" id="importBtn">Importar matriz</button></div>
+      </details>
+
+      <div class="action-bar"><div class="action-left"><label for="precision">Decimales mostrados</label><select id="precision"><option value="4">4</option><option value="6" selected>6</option><option value="8">8</option><option value="10">10</option><option value="12">12</option></select></div><button id="solveBtn" type="button" class="btn btn-primary"><span aria-hidden="true">∑</span> Resolver sistema <span aria-hidden="true">→</span></button></div>
+      <div role="alert" id="errorBox" class="error-box" hidden></div>
+    </section>
+
+    <section class="panel result-panel" id="resultPanel" aria-labelledby="result-title" hidden>
+      <div class="section-head"><div><div class="section-overline">02 / RESULTADO</div><h2 id="result-title">Solución del sistema</h2></div><div class="small-actions"><button class="btn btn-secondary btn-small" type="button" id="copyResultBtn">Copiar solución</button><button class="btn btn-secondary btn-small" type="button" id="downloadBtn">Exportar CSV</button></div></div>
+      <div id="resultStatus" class="result-status"></div>
+      <div class="result-metrics" id="resultMetrics"></div>
+      <div id="resultContent"></div>
+      <div id="resultDisclaimer" class="disclaimer">Los resultados son aproximaciones numéricas de punto flotante. En matrices mal condicionadas o casi singulares puede perderse precisión.</div>
+      <details class="math-details" id="rrefDetails"><summary>Matriz escalonada reducida (RREF) <span class="summary-arrow">⌄</span></summary><div id="rrefContainer" class="table-wrap"></div></details>
+      <details class="math-details" id="stepsDetails"><summary>Procedimiento Gauss-Jordan <span id="stepsCount" class="step-count"></span><span class="summary-arrow">⌄</span></summary><p class="step-note">Se normaliza cada pivote y se eliminan los demás elementos de su columna. Para sistemas pequeños, se muestra la matriz tras cada operación; para sistemas grandes, se presentan las operaciones.</p><div id="stepsList"></div></details>
+    </section>
+
+    <footer class="page-footer"><span><strong>MatrizLab</strong> · Herramienta didáctica para ingeniería</span><span>Sin cuentas · Sin servidores · Funciona sin conexión después de guardar los archivos</span></footer>
+  </main>
+</body>
+</html>
